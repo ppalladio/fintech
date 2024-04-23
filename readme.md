@@ -1,5 +1,9 @@
 # Setup
 
+## Java ver.
+
+currently running on v17, v21 will have compatibility issue
+
 ### check for npm package compatibility
 
 ```bash
