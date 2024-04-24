@@ -57,6 +57,7 @@ const SignUp = () => {
 
                 <TouchableOpacity
                     style={[defaultStyles.pillButton]}
+                    // TODO change to dynamic according to the country of phone number
                     className={`${
                         phoneNumber !== '' ? 'bg-primary' : 'bg-primaryMuted'
                     } mb-5 `}

@@ -4,6 +4,7 @@ import { ResizeMode, Video } from 'expo-av';
 import { Link } from 'expo-router';
 const Page = () => {
     const [vod] = useAssets([require('@/assets/videos/intro.mp4')]);
+	console.log(vod)
     return (
         <View className="flex-1 justify-between">
             {vod && (
@@ -13,7 +14,6 @@ const Page = () => {
                     isLooping
                     resizeMode={ResizeMode.COVER}
                     source={{ uri: vod[0].uri }}
-                    // style={{ width: '100%', height: '100%' ,position:'absolute' }}
                     className="w-[100%] h-[100%] absolute"
                 />
             )}
