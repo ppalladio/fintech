@@ -1,50 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer components {
+    /* container */
+    .main-container {
+        @apply flex-1 bg-background p-4; /* Similar to padding: 16px */
+    }
 
-/* container */
-.container {
-    @apply flex-1 bg-background p-4; /* Similar to padding: 16px */
-}
+    /* header */
+    .header {
+        @apply text-4xl font-bold;
+    }
 
-/* header */
-.header {
-    @apply text-4xl font-bold;
-}
+    /* pillButton */
+    .pillButton {
+        @apply flex items-center justify-center px-4 h-16 rounded-full;
+    }
 
-/* pillButton */
-.pillButton {
-    @apply flex items-center justify-center px-4 h-16 rounded-full;
-}
+    /* textLink */
+    .textLink {
+        @apply text-primary text-lg font-medium;
+    }
 
-/* textLink */
-.textLink {
-    @apply text-primary text-lg font-medium;
-}
+    /* descriptionText */
+    .descriptionText {
+        @apply text-lg text-gray mt-5;
+    }
 
-/* descriptionText */
-.descriptionText {
-    @apply text-lg text-gray mt-5;
-}
+    /* buttonText */
+    .buttonText {
+        @apply text-white text-lg font-medium;
+    }
 
-/* buttonText */
-.buttonText {
-    @apply text-white text-lg font-medium;
-}
+    /* pillButtonSmall */
+    .pillButtonSmall {
+        @apply flex items-center justify-center px-5 h-10 rounded-md;
+    }
 
-/* pillButtonSmall */
-.pillButtonSmall {
-    @apply flex items-center justify-center px-5 h-10 rounded-md;
-}
+    /* buttonTextSmall */
+    .buttonTextSmall {
+        @apply text-white text-base font-medium;
+    }
 
-/* buttonTextSmall */
-.buttonTextSmall {
-    @apply text-white text-base font-medium;
-}
+    /* sectionHeader */
+    .sectionHeader {
+        @apply text-2xl font-bold my-5; /* Use mx-5 for horizontal margin if needed */
+    }
 
-/* sectionHeader */
-.sectionHeader {
-    @apply text-2xl font-bold my-5; /* Use mx-5 for horizontal margin if needed */
-}
-
-/* block */
-.block {
-    @apply mx-5 p-3 bg-white rounded-lg;
+    /* block */
+    .block {
+        @apply mx-5 p-3 bg-white rounded-lg;
+    }
 }
