@@ -11,9 +11,28 @@ export {
 import { ChevronLeft, CircleHelp } from 'lucide-react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
+import * as SecureStore from 'expo-secure-store';
+import { ClerkProvider } from '@clerk/clerk-expo';
 export const unstable_settings = {
     // Ensure that reloading on `/modal` keeps a back button present.
     initialRouteName: '(tabs)',
+};
+const CLERK_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY as string;
+const tokenCache = {
+    async getToken(key: string) {
+        try {
+            return SecureStore.getItemAsync(key);
+        } catch (err) {
+            return null;
+        }
+    },
+    async saveToken(key: string, value: string) {
+        try {
+            return SecureStore.setItemAsync(key, value);
+        } catch (err) {
+            return;
+        }
+    },
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -86,6 +105,24 @@ const InitialLayout = () => {
                 }}
             />
             <Stack.Screen
+                name="verify/[phone]"
+                options={{
+                    title: '',
+                    headerBackTitle: '',
+                    headerShadowVisible: false,
+                    headerStyle: { backgroundColor: '#F5F5F5' },
+                    headerLeft: () => (
+                        <TouchableOpacity
+                            onPress={() => {
+                                router.back;
+                            }}
+                        >
+                            <ChevronLeft className="text-black p-2" />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />{' '}
+            <Stack.Screen
                 name="help"
                 options={{ title: 'Help', presentation: 'modal' }}
             />
@@ -95,10 +132,12 @@ const InitialLayout = () => {
 
 function RootLayoutNav() {
     return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <StatusBar style="light" />
-            <InitialLayout />
-        </GestureHandlerRootView>
+        <ClerkProvider publishableKey={CLERK_KEY} tokenCache={tokenCache}>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <StatusBar style="light" />
+                <InitialLayout />
+            </GestureHandlerRootView>
+        </ClerkProvider>
     );
 }
 

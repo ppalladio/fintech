@@ -1,4 +1,5 @@
 import { defaultStyles } from '@/constants/Styles';
+import { useSignUp } from '@clerk/clerk-expo';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -14,8 +15,25 @@ const SignUp = () => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const keyboardVerticalOffset = Platform.OS === 'ios' ? 90 : 0;
     const router = useRouter();
-
-    const onSignUp = async () => {};
+    const { signUp } = useSignUp();
+    const onSignUp = async () => {
+        const fullPhoneNumber = `${countryCode}${phoneNumber}`;
+        router.push({
+            pathname: '/verify/[phone]',
+            params: { phone: fullPhoneNumber },
+        });
+        // try {
+        //     await signUp!.create({
+        //         phoneNumber: fullPhoneNumber,
+        //     });
+        //     router.push({
+        //         pathname: '/verify/[phone]',
+        //         params: { phone: fullPhoneNumber },
+        //     });
+        // } catch (error) {
+        //     console.log('error sign up:' + error);
+        // }
+    };
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
