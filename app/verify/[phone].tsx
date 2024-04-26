@@ -1,13 +1,25 @@
 import { defaultStyles } from '@/constants/Styles';
-import { useSignIn, useSignUp } from '@clerk/clerk-expo';
-import { Link, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { View, Text, Platform } from 'react-native';
 import {
-	CodeField,
+    isClerkAPIResponseError,
+    useAuth,
+    useSignIn,
+    useSignUp,
+} from '@clerk/clerk-expo';
+import { Link, useLocalSearchParams } from 'expo-router';
+import { Fragment, useEffect, useState } from 'react';
+import {
+    View,
+    Text,
+    Platform,
+    StyleSheet,
+    TouchableOpacity,
+    Alert,
+} from 'react-native';
+import {
+    CodeField,
     Cursor,
     useBlurOnFulfill,
-    useClearByFocusCell
+    useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
 const Page = () => {
     const { phone, signin } = useLocalSearchParams<{
@@ -24,42 +36,95 @@ const Page = () => {
         setValue: setCode,
     });
     useEffect(() => {
-        if (code.length === 0) {
-            verifySignIn();
+        if (code.length === 6) {
+            console.log(code);
         }
-        verifyCode();
-    }, []);
-    const verifyCode = async () => {};
-    const verifySignIn = async () => {};
+        if (signin === 'true') {
+            verifySignIn();
+        } else {
+            verifyCode();
+        }
+    }, [code]);
+
+    const verifyCode = async () => {
+        try {
+            await signUp!.attemptPhoneNumberVerification({
+                code,
+            });
+            await setActive!({ session: signUp!.createdSessionId });
+        } catch (error) {
+            if (isClerkAPIResponseError(error)) {
+                Alert.alert('Error', error.errors[0].message);
+            }
+        }
+    };
+    const verifySignIn = async () => {
+        try {
+            await signIn!.attemptFirstFactor({
+                strategy: 'phone_code',
+                code,
+            });
+            await setActive!({ session: signIn!.createdSessionId });
+        } catch (error) {
+            if (isClerkAPIResponseError(error)) {
+                Alert.alert('Error', error.errors[0].message);
+            }
+        }
+    };
     return (
         <View style={[defaultStyles.container]}>
             <Text style={[defaultStyles.header]}>6-digit code</Text>
             <Text style={[defaultStyles.descriptionText]}>
                 Code sent to {phone} unless you already have an account
             </Text>
-			<CodeField
-        ref={ref}
-        {...props}
-        // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
-        value={code}
-        onChangeText={setCode}
-        cellCount={CELL_COUNT}
-        rootStyle={styles.codeFieldRoot}
-        keyboardType="number-pad"
-        textContentType="oneTimeCode"
-        autoComplete={Platform.select({ android: 'sms-otp', default: 'one-time-code' })}
-        testID="my-code-input"
-        renderCell={({index, symbol, isFocused}) => (
-          <Text
-            key={index}
-            style={[styles.cell, isFocused && styles.focusCell]}
-            onLayout={getCellOnLayoutHandler(index)}>
-            {symbol || (isFocused ? <Cursor/> : null)}
-          </Text>
-        )}
-      />
-            <Link href={'/login'} replace asChild></Link>
+            <CodeField
+                ref={ref}
+                {...props}
+                value={code}
+                onChangeText={setCode}
+                cellCount={CELL_COUNT}
+                rootStyle={styles.codeFieldRoot}
+                keyboardType="number-pad"
+                textContentType="oneTimeCode"
+                renderCell={({ index, symbol, isFocused }) => (
+                    <Fragment key={index}>
+                        <View
+                            // Make sure that you pass onLayout={getCellOnLayoutHandler(index)} prop to root component of "Cell"
+                            onLayout={getCellOnLayoutHandler(index)}
+                            key={index}
+                            className={`w-[45px] h-[60px] justify-center items-center bg-lightGray !rounded-2xl, ${
+                                isFocused ? 'pb-0' : ''
+                            }`}
+                        >
+                            <Text className=" text-black text-[36px] text-center">
+                                {symbol || (isFocused ? <Cursor /> : null)}
+                            </Text>
+                        </View>
+                        {index === 2 ? (
+                            <View
+                                key={`separator-${index}`}
+                                className="h-[2px] w-[10px] bg-gray self-center"
+                            />
+                        ) : null}
+                    </Fragment>
+                )}
+            />
+            <Link href={'/login'} replace asChild>
+                <TouchableOpacity>
+                    <Text style={[defaultStyles.textLink]}>
+                        Already have an account? Log in
+                    </Text>
+                </TouchableOpacity>
+            </Link>
         </View>
     );
 };
+const styles = StyleSheet.create({
+    codeFieldRoot: {
+        marginVertical: 20,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        gap: 12,
+    },
+});
 export default Page;

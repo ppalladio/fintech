@@ -12,7 +12,7 @@ import { ChevronLeft, CircleHelp } from 'lucide-react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import * as SecureStore from 'expo-secure-store';
-import { ClerkProvider } from '@clerk/clerk-expo';
+import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
 export const unstable_settings = {
     // Ensure that reloading on `/modal` keeps a back button present.
     initialRouteName: '(tabs)',
@@ -42,6 +42,8 @@ const InitialLayout = () => {
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
         ...FontAwesome.font,
     });
+	const { isLoaded, isSignedIn } = useAuth();
+
     const router = useRouter();
     // Expo Router uses Error Boundaries to catch errors in the navigation tree.
     useEffect(() => {
@@ -53,6 +55,9 @@ const InitialLayout = () => {
             SplashScreen.hideAsync();
         }
     }, [loaded]);
+useEffect(() => {
+  
+}, [isSignedIn])
 
     if (!loaded) {
         return null;
@@ -71,7 +76,7 @@ const InitialLayout = () => {
                     headerLeft: () => (
                         <TouchableOpacity
                             onPress={() => {
-                                router.back;
+                                router.back();
                             }}
                         >
                             <ChevronLeft className="text-black p-2" />
@@ -89,7 +94,7 @@ const InitialLayout = () => {
                     headerLeft: () => (
                         <TouchableOpacity
                             onPress={() => {
-                                router.back;
+                                router.back();
                             }}
                         >
                             <ChevronLeft className="text-black p-2" />
@@ -114,7 +119,7 @@ const InitialLayout = () => {
                     headerLeft: () => (
                         <TouchableOpacity
                             onPress={() => {
-                                router.back;
+                                router.back();
                             }}
                         >
                             <ChevronLeft className="text-black p-2" />

@@ -22,17 +22,18 @@ const SignUp = () => {
             pathname: '/verify/[phone]',
             params: { phone: fullPhoneNumber },
         });
-        // try {
-        //     await signUp!.create({
-        //         phoneNumber: fullPhoneNumber,
-        //     });
-        //     router.push({
-        //         pathname: '/verify/[phone]',
-        //         params: { phone: fullPhoneNumber },
-        //     });
-        // } catch (error) {
-        //     console.log('error sign up:' + error);
-        // }
+        try {
+            await signUp!.create({
+                phoneNumber: fullPhoneNumber,
+            });
+            signUp!.preparePhoneNumberVerification();
+            router.push({
+                pathname: '/verify/[phone]',
+                params: { phone: fullPhoneNumber },
+            });
+        } catch (error) {
+            console.log('error sign up:' + error);
+        }
     };
     return (
         <KeyboardAvoidingView
