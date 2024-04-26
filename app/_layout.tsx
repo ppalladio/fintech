@@ -42,7 +42,7 @@ const InitialLayout = () => {
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
         ...FontAwesome.font,
     });
-	const { isLoaded, isSignedIn } = useAuth();
+    const { isLoaded, isSignedIn } = useAuth();
 
     const router = useRouter();
     // Expo Router uses Error Boundaries to catch errors in the navigation tree.
@@ -55,9 +55,9 @@ const InitialLayout = () => {
             SplashScreen.hideAsync();
         }
     }, [loaded]);
-useEffect(() => {
-  
-}, [isSignedIn])
+    useEffect(() => {
+        console.log('isSignedIn', isSignedIn);
+    }, [isSignedIn]);
 
     if (!loaded) {
         return null;
