@@ -46,19 +46,7 @@ const Page = () => {
         }
     }, [code]);
 
-    // const verifyCode = async () => {
-    //     try {
-    //         await signUp!.attemptPhoneNumberVerification({
-    //             code,
-    //         });
-    //         await setActive!({ session: signUp!.createdSessionId });
-    //     } catch (error) {
-    //         if (isClerkAPIResponseError(error)) {
-    //             console.log("verifyCode func error:", error.errors[0].message);
-    // 			Alert.alert('Error', error.errors[0].message);
-    //         }
-    //     }
-    // };
+   
     const verifyCode = async () => {
         try {
             await signUp!.attemptPhoneNumberVerification({

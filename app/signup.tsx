@@ -13,15 +13,12 @@ import {
 const SignUp = () => {
     const [countryCode, setCountryCode] = useState('+34');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const keyboardVerticalOffset = Platform.OS === 'ios' ? 90 : 0;
+    const keyboardVerticalOffset = Platform.OS === 'ios' ? 80 : 0;
     const router = useRouter();
     const { signUp } = useSignUp();
     const onSignUp = async () => {
         const fullPhoneNumber = `${countryCode}${phoneNumber}`;
-        router.push({
-            pathname: '/verify/[phone]',
-            params: { phone: fullPhoneNumber },
-        });
+
         try {
             await signUp!.create({
                 phoneNumber: fullPhoneNumber,

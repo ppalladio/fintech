@@ -1,23 +1,16 @@
+import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
+import { Ionicons } from '@expo/vector-icons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
-import { Link, Stack, useRouter } from 'expo-router';
+import { Link, Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
-export {
-    // Catch any errors thrown by the Layout component.
-    ErrorBoundary,
-} from 'expo-router';
-import { ChevronLeft, CircleHelp } from 'lucide-react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { TouchableOpacity, Text, View, ActivityIndicator } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
 import * as SecureStore from 'expo-secure-store';
-import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
-export const unstable_settings = {
-    // Ensure that reloading on `/modal` keeps a back button present.
-    initialRouteName: '(tabs)',
-};
-const CLERK_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY as string;
+
 const tokenCache = {
     async getToken(key: string) {
         try {
@@ -35,16 +28,23 @@ const tokenCache = {
     },
 };
 
+export {
+    // Catch any errors thrown by the Layout component.
+    ErrorBoundary,
+} from 'expo-router';
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
 const InitialLayout = () => {
     const [loaded, error] = useFonts({
         SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
         ...FontAwesome.font,
     });
-    const { isLoaded, isSignedIn } = useAuth();
-
     const router = useRouter();
+    const { isLoaded, isSignedIn } = useAuth();
+    const segments = useSegments();
+
     // Expo Router uses Error Boundaries to catch errors in the navigation tree.
     useEffect(() => {
         if (error) throw error;
@@ -55,12 +55,32 @@ const InitialLayout = () => {
             SplashScreen.hideAsync();
         }
     }, [loaded]);
+
     useEffect(() => {
-        console.log('isSignedIn', isSignedIn);
+        if (!isLoaded) return;
+
+        const inAuthGroup = segments[0] === '(authenticated)';
+
+        if (isSignedIn && !inAuthGroup) {
+
+            router.replace('/(authenticated)/(tabs)/home');
+        } else if (!isSignedIn) {
+            router.replace('/');
+        }
     }, [isSignedIn]);
 
-    if (!loaded) {
-        return null;
+    if (!loaded || !isLoaded) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <ActivityIndicator size="large" color={'#3D38ED'} />
+            </View>
+        );
     }
 
     return (
@@ -72,78 +92,92 @@ const InitialLayout = () => {
                     title: '',
                     headerBackTitle: '',
                     headerShadowVisible: false,
-                    headerStyle: { backgroundColor: '#F5F5F5' },
+                    headerStyle: { backgroundColor: '#f5f5f5' },
                     headerLeft: () => (
-                        <TouchableOpacity
-                            onPress={() => {
-                                router.back();
-                            }}
-                        >
-                            <ChevronLeft className="text-black p-2" />
+                        <TouchableOpacity onPress={router.back}>
+                            <Ionicons
+                                name="arrow-back"
+                                size={34}
+                                color={'#141518'}
+                            />
                         </TouchableOpacity>
                     ),
                 }}
-            />{' '}
+            />
+
             <Stack.Screen
                 name="login"
                 options={{
                     title: '',
                     headerBackTitle: '',
                     headerShadowVisible: false,
-                    headerStyle: { backgroundColor: '#F5F5F5' },
+                    headerStyle: { backgroundColor: '#f5f5f5' },
                     headerLeft: () => (
-                        <TouchableOpacity
-                            onPress={() => {
-                                router.back();
-                            }}
-                        >
-                            <ChevronLeft className="text-black p-2" />
+                        <TouchableOpacity onPress={router.back}>
+                            <Ionicons
+                                name="arrow-back"
+                                size={34}
+                                color={'#141518'}
+                            />
                         </TouchableOpacity>
                     ),
                     headerRight: () => (
                         <Link href={'/help'} asChild>
                             <TouchableOpacity>
-                                <CircleHelp className="text-red-400 p-2" />
+                                <Ionicons
+                                    name="help-circle-outline"
+                                    size={34}
+                                    color={'#141518'}
+                                />
                             </TouchableOpacity>
                         </Link>
                     ),
                 }}
             />
+
+            <Stack.Screen
+                name="help"
+                options={{ title: 'Help', presentation: 'modal' }}
+            />
+
             <Stack.Screen
                 name="verify/[phone]"
                 options={{
                     title: '',
                     headerBackTitle: '',
                     headerShadowVisible: false,
-                    headerStyle: { backgroundColor: '#F5F5F5' },
+                    headerStyle: { backgroundColor: '#f5f5f5' },
                     headerLeft: () => (
-                        <TouchableOpacity
-                            onPress={() => {
-                                router.back();
-                            }}
-                        >
-                            <ChevronLeft className="text-black p-2" />
+                        <TouchableOpacity onPress={router.back}>
+                            <Ionicons
+                                name="arrow-back"
+                                size={34}
+                                color={'#141518'}
+                            />
                         </TouchableOpacity>
                     ),
                 }}
-            />{' '}
+            />
             <Stack.Screen
-                name="help"
-                options={{ title: 'Help', presentation: 'modal' }}
+                name="(authenticated)/(tabs)"
+                options={{ headerShown: false }}
             />
         </Stack>
     );
 };
 
-function RootLayoutNav() {
+const RootLayoutNav = () => {
     return (
-        <ClerkProvider publishableKey={CLERK_KEY} tokenCache={tokenCache}>
+        <ClerkProvider
+            publishableKey={CLERK_PUBLISHABLE_KEY!}
+            tokenCache={tokenCache}
+        >
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <StatusBar style="light" />
                 <InitialLayout />
             </GestureHandlerRootView>
         </ClerkProvider>
     );
-}
+};
 
 export default RootLayoutNav;

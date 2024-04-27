@@ -4,9 +4,9 @@ import { ResizeMode, Video } from 'expo-av';
 import { Link } from 'expo-router';
 const Page = () => {
     const [vod] = useAssets([require('@/assets/videos/intro.mp4')]);
-	console.log(vod)
+	// console.log(vod)
     return (
-        <View className="flex-1 justify-between">
+        <View className="flex-1 justify-between mx-2">
             {vod && (
                 <Video
                     shouldPlay
@@ -17,7 +17,7 @@ const Page = () => {
                     className="w-[100%] h-[100%] absolute"
                 />
             )}
-            <View className="mt-8 p-2">
+            <View className="mt-[60px] p-2">
                 <Text className="text-[36px] font-bold uppercase text-white">
                     Welcome to the app
                 </Text>
