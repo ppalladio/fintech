@@ -1,5 +1,6 @@
 import { View, Text, ScrollView } from 'react-native';
 import RoundBtn from '@/components/RoundBtn';
+import { Dropdown } from '@/components/Dropdown';
 const Home = () => {
     const onAddMoney = () => {};
     const staticBalance = 1321;
@@ -17,7 +18,7 @@ const Home = () => {
                 <RoundBtn icon="add" text="Add Money" onPress={onAddMoney} />
                 <RoundBtn icon="refresh" text="Exchange"  />
                 <RoundBtn icon="list" text="Details"  />
-                <RoundBtn icon="add" text="Add Money"  />
+                <Dropdown/>
             </View>
         </ScrollView>
     );

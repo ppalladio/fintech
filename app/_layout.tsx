@@ -8,8 +8,10 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { TouchableOpacity, Text, View, ActivityIndicator } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 import * as SecureStore from 'expo-secure-store';
+import { ApplicationProvider, Layout } from '@ui-kitten/components';
+import * as eva from '@eva-design/eva';
 
 const tokenCache = {
     async getToken(key: string) {
@@ -62,7 +64,6 @@ const InitialLayout = () => {
         const inAuthGroup = segments[0] === '(authenticated)';
 
         if (isSignedIn && !inAuthGroup) {
-
             router.replace('/(authenticated)/(tabs)/home');
         } else if (!isSignedIn) {
             router.replace('/');
@@ -84,6 +85,7 @@ const InitialLayout = () => {
     }
 
     return (
+
         <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen
@@ -163,20 +165,23 @@ const InitialLayout = () => {
                 options={{ headerShown: false }}
             />
         </Stack>
+
     );
 };
 
 const RootLayoutNav = () => {
     return (
-        <ClerkProvider
-            publishableKey={CLERK_PUBLISHABLE_KEY!}
-            tokenCache={tokenCache}
-        >
-            <GestureHandlerRootView style={{ flex: 1 }}>
-                <StatusBar style="light" />
-                <InitialLayout />
-            </GestureHandlerRootView>
-        </ClerkProvider>
+        <ApplicationProvider  {...eva} theme={eva.light}>
+            <ClerkProvider
+                publishableKey={CLERK_PUBLISHABLE_KEY!}
+                tokenCache={tokenCache}
+            >
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                    <StatusBar style="light" />
+                    <InitialLayout />
+                </GestureHandlerRootView>
+            </ClerkProvider>
+        </ApplicationProvider>
     );
 };
 

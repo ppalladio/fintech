@@ -16,7 +16,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yuxuanize.fintech"
     },
     "android": {
       "adaptiveIcon": {
@@ -35,6 +36,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "f4439fdc-391f-49df-922b-bb225fd98734"
+      }
     }
   }
 }

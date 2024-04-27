@@ -2,11 +2,13 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useAssets } from 'expo-asset';
 import { ResizeMode, Video } from 'expo-av';
 import { Link } from 'expo-router';
+import { Layout } from '@ui-kitten/components';
 const Page = () => {
     const [vod] = useAssets([require('@/assets/videos/intro.mp4')]);
 	// console.log(vod)
     return (
-        <View className="flex-1 justify-between mx-2">
+
+        <View className="flex-1 justify-between ">
             {vod && (
                 <Video
                     shouldPlay
@@ -22,7 +24,7 @@ const Page = () => {
                     Welcome to the app
                 </Text>
             </View>
-            <View className="flex mb-[60px] flex-row justify-center gap-[20px]">
+            <View className="flex mb-[60px] flex-row justify-center gap-[20px] mx-[2px]">
                 <Link
                     href="/login"
                     className="flex items-center justify-center px-4 h-16 rounded-full flex-1 bg-dark"
@@ -47,6 +49,8 @@ const Page = () => {
                 </Link>
             </View>
         </View>
+
+
     );
 };
 export default Page;
