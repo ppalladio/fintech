@@ -25,7 +25,7 @@ export const useBalanceStore = create<BalanceProps>()(
                     transactions: [...state.transactions, transaction],
                 }));
             },
-            balance: () => 0,
+            balance: () => get().transactions.reduce((acc, cur) => acc + cur.amount, 0),
             clearTransactions: () => {
                 set({
                     transactions: [],
