@@ -12,7 +12,8 @@ const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 import * as SecureStore from 'expo-secure-store';
 import { ApplicationProvider, Layout } from '@ui-kitten/components';
 import * as eva from '@eva-design/eva';
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+const queryProvider = new QueryClient();
 const tokenCache = {
     async getToken(key: string) {
         try {
@@ -85,7 +86,6 @@ const InitialLayout = () => {
     }
 
     return (
-
         <Stack>
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen
@@ -165,22 +165,23 @@ const InitialLayout = () => {
                 options={{ headerShown: false }}
             />
         </Stack>
-
     );
 };
 
 const RootLayoutNav = () => {
     return (
-        <ApplicationProvider  {...eva} theme={eva.light}>
-            <ClerkProvider
-                publishableKey={CLERK_PUBLISHABLE_KEY!}
-                tokenCache={tokenCache}
-            >
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                    <StatusBar style="light" />
-                    <InitialLayout />
-                </GestureHandlerRootView>
-            </ClerkProvider>
+        <ApplicationProvider {...eva} theme={eva.light}>
+            <QueryClientProvider client={queryProvider}>
+                <ClerkProvider
+                    publishableKey={CLERK_PUBLISHABLE_KEY!}
+                    tokenCache={tokenCache}
+                >
+                    <GestureHandlerRootView style={{ flex: 1 }}>
+                        <StatusBar style="light" />
+                        <InitialLayout />
+                    </GestureHandlerRootView>
+                </ClerkProvider>
+            </QueryClientProvider>
         </ApplicationProvider>
     );
 };
