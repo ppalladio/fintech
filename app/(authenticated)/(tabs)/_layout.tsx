@@ -1,9 +1,31 @@
+import CustomHeader from '@/components/CustomHeader';
 import { FontAwesome } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { Tabs } from 'expo-router';
 import { View, Text } from 'react-native';
 const Layout = () => {
     return (
-        <Tabs screenOptions={{ tabBarActiveTintColor: '#3D38ED' }}>
+        <Tabs
+            screenOptions={{
+                tabBarActiveTintColor: '#3D38ED',
+                tabBarBackground: () => (
+                    <BlurView
+                        className="flex-1 bg-slate-100"
+                        intensity={100}
+                        experimentalBlurMethod="dimezisBlurView"
+                    />
+                ),
+                tabBarStyle: {
+                    backgroundColor: 'transparent',
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    elevation: 0,
+                    borderTopWidth: 0,
+                },
+            }}
+        >
             <Tabs.Screen
                 name="home"
                 options={{
@@ -15,6 +37,8 @@ const Layout = () => {
                             color={color}
                         />
                     ),
+                    header: () => <CustomHeader />,
+                    headerTransparent: true,
                 }}
             />
             <Tabs.Screen

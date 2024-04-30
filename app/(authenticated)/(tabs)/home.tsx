@@ -6,14 +6,16 @@ import { defaultStyles } from '@/constants/Styles';
 import { Ionicons } from '@expo/vector-icons';
 import { Divider } from '@ui-kitten/components';
 import WidgetList from '@/components/SortableList/WidgetList';
+import { useHeaderHeight } from '@react-navigation/elements';
 const Home = () => {
+    const headerHeight = useHeaderHeight();
     const { balance, runTransaction, transactions, clearTransactions } =
         useBalanceStore();
     const reversedTransactions = [...transactions].reverse();
     const onAddMoney = () => {
         const amount =
             Math.floor(Math.random() * 100) * (Math.random() > 0.5 ? 1 : -1);
-        runTransaction({ 
+        runTransaction({
             id: Math.random().toString(),
             amount,
             date: new Date(),
@@ -21,7 +23,13 @@ const Home = () => {
         });
     };
     return (
-        <ScrollView className="bg-background flex-1">
+        <ScrollView
+            className="bg-background flex-1"
+            contentContainerStyle={{
+                paddingTop: headerHeight,
+                paddingBottom: 600,
+            }}
+        >
             <View className="my-[50px] align-center">
                 <View className="flex flex-row items-baseline justify-center">
                     <Text className="text-[60px] font-bold">{balance()}</Text>
@@ -82,8 +90,8 @@ const Home = () => {
                     </View>
                 ))}
             </View>
-			<Text style={[defaultStyles.sectionHeader]}>Widgets</Text>
-			<WidgetList/>
+            <Text style={[defaultStyles.sectionHeader]}>Widgets</Text>
+            <WidgetList />
         </ScrollView>
     );
 };
