@@ -49,7 +49,10 @@ const Home = () => {
             <Text style={[defaultStyles.sectionHeader]} className="pb-5">
                 Transaction History
             </Text>
-            <View className=" bg-zinc-200 gap-5 flex justify-center">
+            <View
+                style={[defaultStyles.block]}
+                className=" bg-zinc-200 gap-5 flex justify-center"
+            >
                 {transactions.length === 0 && (
                     <Text className="text-slate-500 pl-5 my-3">
                         No Transactions Yet

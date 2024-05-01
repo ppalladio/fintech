@@ -11,6 +11,6 @@ export async function GET(req: ExpoRequest) {
         },
     );
     const res = await response.json();
-	console.log(res)
+	// console.log(res)
     return ExpoResponse.json(res.data);
 }
