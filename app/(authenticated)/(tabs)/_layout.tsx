@@ -12,7 +12,7 @@ const Layout = () => {
                     <BlurView
                         className="flex-1 bg-slate-100"
                         intensity={100}
-                        experimentalBlurMethod="dimezisBlurView"
+                        experimentalBlurMethod="none"
                     />
                 ),
                 tabBarStyle: {

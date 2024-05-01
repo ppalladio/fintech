@@ -20,7 +20,7 @@ const CryptoPage = () => {
             {currencies.data?.map((currency: any) => (
                 <View key={currency.id} className="flex-row">
                     <Image
-                        source={{ uri: data?.[currency.id].logo }}
+                        source={{ uri: data?.[currency.id]?.logo }}
                         className="w-8 h-8"
                     />
                     <Text>{currency.name}</Text>
