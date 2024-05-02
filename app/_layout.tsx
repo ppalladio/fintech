@@ -164,6 +164,41 @@ const InitialLayout = () => {
                 name="(authenticated)/(tabs)"
                 options={{ headerShown: false }}
             />
+            <Stack.Screen
+                name="(authenticated)/crypto/[id]"
+                options={{
+                    title: '',
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={router.back}>
+                            <Ionicons
+                                name="arrow-back"
+                                size={34}
+                                color={'#141518'}
+                            />
+                        </TouchableOpacity>
+                    ),
+                    headerLargeTitle: true,
+                    headerTransparent: true,
+                    headerRight: () => (
+                        <View className="flex-row gap-3">
+                            <TouchableOpacity>
+                                <Ionicons
+                                    name="notifications-outline"
+                                    className="text-dark"
+                                    size={30}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <Ionicons
+                                    name="star-outline"
+                                    className="text-dark"
+                                    size={30}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    ),
+                }}
+            />
         </Stack>
     );
 };
