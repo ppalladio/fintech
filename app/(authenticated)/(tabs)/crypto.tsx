@@ -18,7 +18,7 @@ const CryptoPage = () => {
             fetch(`/api/v1/info?ids=${ids}`).then((res) => res.json()),
         enabled: !!ids, // only enable is id is truthy
     });
-    console.log(ids);
+    // console.log(ids);
     return (
         <ScrollView
             className="bg-background"

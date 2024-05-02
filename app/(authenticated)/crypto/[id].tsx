@@ -11,14 +11,15 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import { useQuery } from '@tanstack/react-query';
 import { defaultStyles } from '@/constants/Styles';
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { CartesianChart, Line } from 'victory-native';
 const categories = ['Overview', 'News', 'Orders', 'Transactions'];
 
 const Page = () => {
     const { id } = useLocalSearchParams();
     const headerHeight = useHeaderHeight();
     const [activeIndex, setActiveIndex] = useState(0);
-    console.log('id', id);
+    // console.log('id', id);
     const { data } = useQuery({
         queryKey: ['info', id],
         queryFn: async () => {
@@ -28,6 +29,43 @@ const Page = () => {
             return info[+id];
         },
     });
+    const coinPaprikaQuery: string =
+        `${data?.symbol}-${data?.name}`.toLowerCase();
+    console.log(coinPaprikaQuery);
+    const {
+        data: ticker,
+        refetch,
+    } = useQuery({
+        queryKey: ['coin_id', id],
+        queryFn: async (): Promise<any[]> => {
+            if (coinPaprikaQuery) {
+                // Check if query is valid
+                return fetch(`/api/v1/ticker?id=${coinPaprikaQuery}`).then(
+                    (res) => res.json(),
+                );
+            } else {
+                return []; // Return an empty result if query isn't valid
+            }
+        },
+    });
+    useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
+
+        if (coinPaprikaQuery !== 'undefined-undefined') {
+            refetch(); // Trigger the query fetch
+        } else {
+            timeoutId = setTimeout(() => {
+                if (coinPaprikaQuery === 'undefined-undefined') {
+                    throw new Error(
+                        'CoinPaprikaQuery not valid after 5 seconds',
+                    );
+                }
+            }, 5000); // 5 second timeout
+        }
+
+        // Cleanup function: clear the timeout if the component unmounts
+        return () => clearTimeout(timeoutId);
+    }, [coinPaprikaQuery]);
     // console.log(data);
 
     return (
@@ -102,8 +140,7 @@ const Page = () => {
                 )}
                 contentInsetAdjustmentBehavior="automatic"
                 keyExtractor={(i) => i.title}
-				sections={[{ data: [{ title: 'Chart' }] }]}
-
+                sections={[{ data: [{ title: 'Chart' }] }]}
                 style={{ marginTop: headerHeight }}
                 renderSectionHeader={() => (
                     <ScrollView
@@ -143,12 +180,26 @@ const Page = () => {
                 )}
                 renderItem={(item) => (
                     <>
-                        <View className="h-[500px] bg-slate-400"></View>
-                        <View className='m-4'>
+                        <View className="h-[500px] bg-slate-400">
+                            {/* <CartesianChart
+                                data={ticker}
+                                xKey="timestamp"
+                                yKeys={['price']}
+                            >
+                                {({ points }) => (
+                                    <Line
+                                        points={points.price}
+                                        color="#3D38ED"
+                                        strokeWidth={3}
+                                    />
+                                )}
+                            </CartesianChart> */}
+                        </View>
+                        <View className="m-4">
                             <Text className="text-xl font-bold mt-5 text-black">
                                 Overview
                             </Text>
-                            <Text className="text-gray mt-1 leading-5">
+                            <Text className="text-gray mt-1 leading-5git">
                                 {data?.description}
                             </Text>
                         </View>
