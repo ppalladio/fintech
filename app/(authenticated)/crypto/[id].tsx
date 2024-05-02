@@ -12,6 +12,8 @@ import { useQuery } from '@tanstack/react-query';
 import { defaultStyles } from '@/constants/Styles';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
+const categories = ['Overview', 'News', 'Orders', 'Transactions'];
+
 const Page = () => {
     const { id } = useLocalSearchParams();
     const headerHeight = useHeaderHeight();
@@ -23,10 +25,11 @@ const Page = () => {
             const info = await fetch(`/api/v1/info?ids=${id}`).then((res) =>
                 res.json(),
             );
-            return info;
+            return info[+id];
         },
     });
-    const categories = ['Overview', 'News', 'Orders', 'Transactions'];
+    // console.log(data);
+
     return (
         <>
             <Stack.Screen options={{ title: `${data?.name}` }} />
@@ -34,38 +37,61 @@ const Page = () => {
                 ListHeaderComponent={() => (
                     <>
                         <View className="flex-row justify-between items-center my-4">
-                            <Text className="text-base font-bold mt-5 text-gray">
-                                {data?.name}
+                            <Text className="text-2xl font-bold mt-5 text-gray mx-3">
+                                {data?.symbol}
                             </Text>
                             <Image
-                                source={{ uri: data?.symbol }}
+                                source={{ uri: data?.logo }}
                                 style={{ width: 60, height: 60 }}
                             />
                         </View>
                         <View className="flex-row gap-x-2 m-3">
                             <TouchableOpacity
-                                style={[defaultStyles.pillButtonSmall]}
-                                className="bg-primary flex-row gap-4"
+                                style={[
+                                    defaultStyles.pillButtonSmall,
+                                    {
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    },
+                                ]}
+                                className="bg-primary gap-x-4 flex-row "
                             >
-                                <Ionicons name="add" size={24} color={'#fff'} />
-                                <Text
-                                    className="text-white"
-                                    style={[defaultStyles.buttonText]}
-                                >
-                                    Buy
-                                </Text>
+                                <View>
+                                    <Ionicons
+                                        name="add"
+                                        size={24}
+                                        color={'#fff'}
+                                        style={{ alignSelf: 'center' }}
+                                    />
+                                </View>
+                                <View>
+                                    <Text
+                                        className="text-white text-center"
+                                        style={[defaultStyles.buttonText]}
+                                    >
+                                        Buy
+                                    </Text>
+                                </View>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[defaultStyles.pillButtonSmall]}
-                                className="bg-primaryMuted flex-row gap-4"
+                                style={[
+                                    defaultStyles.pillButtonSmall,
+                                    {
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    },
+                                ]}
+                                className="bg-primaryMuted flex-row gap-x-4"
                             >
                                 <Ionicons
                                     name="arrow-back"
                                     size={24}
                                     color={'#fff'}
+                                    style={{ alignSelf: 'center' }}
                                 />
+
                                 <Text
-                                    className="text-white"
+                                    className="text-white text-center"
                                     style={[defaultStyles.buttonText]}
                                 >
                                     Receive
@@ -75,12 +101,14 @@ const Page = () => {
                     </>
                 )}
                 contentInsetAdjustmentBehavior="automatic"
-                keyExtractor={(item) => item.title}
-                sections={[]}
+                keyExtractor={(i) => i.title}
+				sections={[{ data: [{ title: 'Chart' }] }]}
+
                 style={{ marginTop: headerHeight }}
                 renderSectionHeader={() => (
                     <ScrollView
                         horizontal={true}
+                        showsHorizontalScrollIndicator={false}
                         contentContainerStyle={{
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -97,32 +125,34 @@ const Page = () => {
                                 key={index}
                                 onPress={() => setActiveIndex(index)}
                                 className={`${
-                                    activeIndex === index ? 'bg-white' : ''
-                                } p-2 items-center justify-center rounded-2xl px-3`}
+                                    activeIndex === index ? 'bg-[#fff]' : ''
+                                } p-2 items-center justify-center rounded-[20px] px-3`}
                             >
-                                <Text className={`${activeIndex===index?"text-black":"text-gray"} text-sm`}>{item}</Text>
+                                <Text
+                                    className={`${
+                                        activeIndex === index
+                                            ? 'text-black'
+                                            : 'text-gray'
+                                    } text-sm`}
+                                >
+                                    {item}
+                                </Text>
                             </TouchableOpacity>
                         ))}
                     </ScrollView>
                 )}
                 renderItem={(item) => (
-					<>
-                    <View className='h-[500px]'>
-
-					</View>
-					<View>
-                        <Text className="text-base font-bold mt-5 text-gray">
-                            subtitle
-                        </Text>
-                        <Text className="text-gray">
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Nihil quibusdam, quis sit doloremque animi
-                            nisi, voluptates perferendis vero inventore
-                            veritatis recusandae beatae non aliquam quae et nemo
-                            sequi commodi harum!
-                        </Text>
-                    </View>
-					</>
+                    <>
+                        <View className="h-[500px] bg-slate-400"></View>
+                        <View className='m-4'>
+                            <Text className="text-xl font-bold mt-5 text-black">
+                                Overview
+                            </Text>
+                            <Text className="text-gray mt-1 leading-5">
+                                {data?.description}
+                            </Text>
+                        </View>
+                    </>
                 )}
             ></SectionList>
         </>
