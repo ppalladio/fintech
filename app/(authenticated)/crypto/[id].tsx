@@ -6,19 +6,44 @@ import {
     SectionList,
     Image,
     TouchableOpacity,
+    Alert,
+    TextInput,
 } from 'react-native';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useQuery } from '@tanstack/react-query';
 import { defaultStyles } from '@/constants/Styles';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { CartesianChart, Line } from 'victory-native';
+import { CartesianChart, Line, useChartPressState } from 'victory-native';
+import { Circle, useFont } from '@shopify/react-native-skia';
+import { format } from 'date-fns';
+import * as Haptics from 'expo-haptics';
+import Animated, {
+    SharedValue,
+    useAnimatedProps,
+} from 'react-native-reanimated';
+Animated.addWhitelistedNativeProps({ text: true });
 const categories = ['Overview', 'News', 'Orders', 'Transactions'];
-
+function Tooltip({
+    x,
+    y,
+}: Readonly<{ x: SharedValue<number>; y: SharedValue<number> }>) {
+    return <Circle cx={x} cy={y} r={10} color="#3D38ED" />;
+}
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 const Page = () => {
     const { id } = useLocalSearchParams();
+    const font = useFont(require('@/assets/fonts/SpaceMono-Regular.ttf'));
     const headerHeight = useHeaderHeight();
     const [activeIndex, setActiveIndex] = useState(0);
+    const { state, isActive } = useChartPressState({ x: 0, y: { price: 0 } });
+	console.log(state,isActive)
+    useEffect(() => {
+        if (isActive) {
+            Haptics.selectionAsync();
+        }
+    }, [isActive]);
+
     // console.log('id', id);
     const { data } = useQuery({
         queryKey: ['info', id],
@@ -29,13 +54,12 @@ const Page = () => {
             return info[+id];
         },
     });
+    //! query is send to api only the first time not the  subsequent times
     const coinPaprikaQuery: string =
         `${data?.symbol}-${data?.name}`.toLowerCase();
-    console.log(coinPaprikaQuery);
-    const {
-        data: ticker,
-        refetch,
-    } = useQuery({
+    // console.log(coinPaprikaQuery);
+
+    const { data: ticker, refetch } = useQuery({
         queryKey: ['coin_id', id],
         queryFn: async (): Promise<any[]> => {
             if (coinPaprikaQuery) {
@@ -48,25 +72,22 @@ const Page = () => {
             }
         },
     });
-    useEffect(() => {
-        let timeoutId: NodeJS.Timeout;
 
-        if (coinPaprikaQuery !== 'undefined-undefined') {
-            refetch(); // Trigger the query fetch
-        } else {
-            timeoutId = setTimeout(() => {
-                if (coinPaprikaQuery === 'undefined-undefined') {
-                    throw new Error(
-                        'CoinPaprikaQuery not valid after 5 seconds',
-                    );
-                }
-            }, 5000); // 5 second timeout
-        }
+    const animatedText = useAnimatedProps(() => {
+        return {
+            text: `${state.y?.price.value.value.toFixed(2)}€`,
+            defaultValue: ``,
+        };
+    });
+    const animatedDate = useAnimatedProps(() => {
+        const date = new Date(state.x.value.value);
+        return {
+            text: `${date.toLocaleDateString('es-ES')}`,
+            defaultValue: ``,
+        };
+    });
 
-        // Cleanup function: clear the timeout if the component unmounts
-        return () => clearTimeout(timeoutId);
-    }, [coinPaprikaQuery]);
-    // console.log(data);
+    console.log(ticker);
 
     return (
         <>
@@ -180,20 +201,77 @@ const Page = () => {
                 )}
                 renderItem={(item) => (
                     <>
-                        <View className="h-[500px] bg-slate-400">
-                            {/* <CartesianChart
-                                data={ticker}
-                                xKey="timestamp"
-                                yKeys={['price']}
-                            >
-                                {({ points }) => (
-                                    <Line
-                                        points={points.price}
-                                        color="#3D38ED"
-                                        strokeWidth={3}
-                                    />
-                                )}
-                            </CartesianChart> */}
+                        <View className="h-[500px] bg-slate-100">
+                            {ticker ? (
+                                <>
+                                    {!isActive ? (
+                                        <View>
+                                            <Text className="text-3xl font-bold text-dark">
+                                                {ticker[
+                                                    ticker.length - 1
+                                                ]?.price.toFixed(2)}
+                                                €
+                                            </Text>
+                                            <Text className="text-base text-gray">
+                                                Today
+                                            </Text>
+                                        </View>
+                                    ) : (
+                                        <View>
+                                            <AnimatedTextInput
+                                                editable={false}
+                                                underlineColorAndroid={
+                                                    'transparent'
+                                                }
+                                                className="text-3xl font-bold text-dark"
+                                                animatedProps={animatedText}
+                                            ></AnimatedTextInput>
+                                            <AnimatedTextInput
+                                                underlineColorAndroid={
+                                                    'transparent'
+                                                }
+                                                className="text-base text-gray"
+                                                animatedProps={animatedDate}
+                                            ></AnimatedTextInput>
+                                        </View>
+                                    )}
+                                    <CartesianChart
+                                        chartPressState={state}
+                                        axisOptions={{
+                                            font,
+                                            tickCount: 5,
+                                            labelOffset: { x: -2, y: 0 },
+                                            labelColor: '#3D38ED',
+                                            formatYLabel: (v) => `${v} €`,
+                                            formatXLabel: (ms) =>
+                                                format(new Date(ms), 'MM/yy'),
+                                        }}
+                                        data={ticker}
+                                        xKey="timestamp"
+                                        yKeys={['price']}
+                                    >
+                                        {({ points }) => (
+                                            <>
+                                                {isActive && (
+                                                    <Tooltip
+                                                        x={state.x.position}
+                                                        y={
+                                                            state.y?.price
+                                                                .position
+                                                        }
+                                                    />
+                                                )}
+
+                                                <Line
+                                                    color="#3D38ED"
+                                                    points={points?.price}
+                                                    strokeWidth={3}
+                                                />
+                                            </>
+                                        )}
+                                    </CartesianChart>
+                                </>
+                            ) : null}
                         </View>
                         <View className="m-4">
                             <Text className="text-xl font-bold mt-5 text-black">
