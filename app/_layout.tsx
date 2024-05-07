@@ -13,6 +13,7 @@ import * as SecureStore from 'expo-secure-store';
 import { ApplicationProvider, Layout } from '@ui-kitten/components';
 import * as eva from '@eva-design/eva';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { UserInactivityProvider } from '@/context/UserInactivity';
 const queryProvider = new QueryClient();
 const tokenCache = {
     async getToken(key: string) {
@@ -199,6 +200,10 @@ const InitialLayout = () => {
                     ),
                 }}
             />
+            <Stack.Screen
+                name={'(authenticated)/(modals)/lock'}
+                options={{ headerShown: false, animation: 'none' }}
+            />
         </Stack>
     );
 };
@@ -211,10 +216,12 @@ const RootLayoutNav = () => {
                     publishableKey={CLERK_PUBLISHABLE_KEY!}
                     tokenCache={tokenCache}
                 >
-                    <GestureHandlerRootView style={{ flex: 1 }}>
-                        <StatusBar style="light" />
-                        <InitialLayout />
-                    </GestureHandlerRootView>
+                    <UserInactivityProvider>
+                        <GestureHandlerRootView style={{ flex: 1 }}>
+                            <StatusBar style="light" />
+                            <InitialLayout />
+                        </GestureHandlerRootView>
+                    </UserInactivityProvider>
                 </ClerkProvider>
             </QueryClientProvider>
         </ApplicationProvider>

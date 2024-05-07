@@ -37,7 +37,7 @@ const Page = () => {
     const headerHeight = useHeaderHeight();
     const [activeIndex, setActiveIndex] = useState(0);
     const { state, isActive } = useChartPressState({ x: 0, y: { price: 0 } });
-	console.log(state,isActive)
+	// console.log(state,isActive)
     useEffect(() => {
         if (isActive) {
             Haptics.selectionAsync();
