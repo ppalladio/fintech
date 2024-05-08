@@ -1,15 +1,39 @@
 import { useAuth, useUser } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, TextInput } from 'react-native';
 import ImagePicker from 'expo-image-picker';
+import { setAppIcon, getAppIcon } from 'expo-dynamic-app-icon';
+const ICONS = [
+    {
+        name: 'default',
+        icon: require('@/assets/images/icon.png'),
+    },
+    {
+        name: 'dark',
+        icon: require('@/assets/images/icon-dark.png'),
+    },
+    {
+        name: 'colored',
+        icon: require('@/assets/images/icon-vivid.png'),
+    },
+];
 const AccountPhotoPage = () => {
     const { user } = useUser();
     const { signOut } = useAuth();
     const [firstName, setFirstName] = useState(user?.firstName);
     const [lastName, setLastName] = useState(user?.lastName);
     const [edit, setEdit] = useState(false);
+    const [activeIcon, setActiveIcon] = useState('default');
+    useEffect(() => {
+        const loadIconPref = async () => {
+            const icon = await getAppIcon();
+            setActiveIcon(icon);
+        };
+        loadIconPref();
+    }, []);
+
     const onSaveUser = async () => {
         try {
             await user?.update({ firstName: firstName!, lastName: lastName! });
@@ -33,6 +57,10 @@ const AccountPhotoPage = () => {
                 file: base64,
             });
         }
+    };
+    const onChangeAppIcon = async (icon: string) => {
+        await setAppIcon(icon.toLowerCase());
+        setActiveIcon(icon);
     };
     return (
         <BlurView
@@ -91,6 +119,22 @@ const AccountPhotoPage = () => {
                         </View>
                     )}
                 </View>
+            </View>
+            <View>
+                {ICONS.map((icon) => (
+                    <TouchableOpacity
+                        key={icon.name}
+                        onPress={() => onChangeAppIcon(icon.name)}
+                    >
+                        <Image source={icon.icon} className="w-5 h-6" />
+                        <Text className="text-white text-5">{icon.name}</Text>
+
+                        {activeIcon.toLowerCase() ===
+                            icon.name.toLowerCase() && (
+                            <Ionicons name="checkmark-outline" color={'#fff'} />
+                        )}
+                    </TouchableOpacity>
+                ))}
             </View>
         </BlurView>
     );
